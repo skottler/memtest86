@@ -17,7 +17,7 @@
 #define CONSERVATIVE_SMP 1
 
 /* BEEP_MODE - Beep on error. Default off, Change to 1 to enable */
-#define BEEP_MODE 0
+#define BEEP_MODE 1
 
 /* BEEP_END_NO_ERROR - Beep at end of each pass without error. Default off, Change to 1 to enable */
 #define BEEP_END_NO_ERROR 0
@@ -29,13 +29,13 @@
 /* SERIAL_CONSOLE_DEFAULT -  The default state of the serial console. */
 /*	This is normally off since it slows down testing.  Change to a 1 */
 /*	to enable. */
-#define SERIAL_CONSOLE_DEFAULT 0
+#define SERIAL_CONSOLE_DEFAULT 1
 
 /* SERIAL_TTY - The default serial port to use. 0=ttyS0, 1=ttyS1 */ 
-#define SERIAL_TTY 0
+#define SERIAL_TTY 1
 
 /* SERIAL_BAUD_RATE - Baud rate for the serial console */
-#define SERIAL_BAUD_RATE 9600
+#define SERIAL_BAUD_RATE 115200
 
 /* SCRN_DEBUG - extra check for SCREEN_BUFFER
  */ 
