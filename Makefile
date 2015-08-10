@@ -3,7 +3,6 @@
 # Author:		Chris Brady
 # Created:		January 1, 1996
 
-
 #
 # Path for the floppy disk device
 #
@@ -12,22 +11,20 @@ FDISK=/dev/fd0
 AS=as -32
 CC=gcc
 
-CFLAGS= -Wall -march=i486 -m32 -O1 -fomit-frame-pointer -fno-builtin \
-	-ffreestanding -fPIC $(SMP_FL) -fno-stack-protector 
-	
-OBJS= head.o reloc.o main.o test.o init.o lib.o patn.o screen_buffer.o \
-      config.o cpuid.o linuxbios.o pci.o memsize.o spd.o error.o dmi.o controller.o \
-      smp.o vmem.o random.o
-      
+CFLAGS= -Wall -march=i486 -m32 -O2 -fomit-frame-pointer -fno-builtin -ffreestanding -fPIC -fno-stack-protector
 
-all: clean memtest.bin memtest 
+OBJS= head.o reloc.o main.o test.o init.o lib.o patn.o screen_buffer.o \
+      config.o linuxbios.o memsize.o pci.o controller.o random.o spd.o \
+      error.o dmi.o cpuid.o
+
+all: memtest.bin memtest
 
 # Link it statically once so I know I don't have undefined
 # symbols and then link it dynamically so I have full
 # relocation information
 memtest_shared: $(OBJS) memtest_shared.lds Makefile
 	$(LD) --warn-constructors --warn-common -static -T memtest_shared.lds \
-	 -o $@ $(OBJS) && \
+	-o $@ $(OBJS) && \
 	$(LD) -shared -Bsymbolic -T memtest_shared.lds -o $@ $(OBJS)
 
 memtest_shared.bin: memtest_shared
@@ -53,22 +50,18 @@ reloc.o: reloc.c
 	$(CC) -c $(CFLAGS) -fno-strict-aliasing reloc.c
 
 test.o: test.c
-	$(CC) -c -Wall -march=i486 -m32 -O0 -fomit-frame-pointer -fno-builtin -ffreestanding test.c
-
-random.o: random.c
-	$(CC) -c -Wall -march=i486 -m32 -O3 -fomit-frame-pointer -fno-builtin -ffreestanding random.c
-	
-# rule for build number generation  
-build_number:
-	sh make_buildnum.sh  
+	$(CC) -c -Wall -march=i486 -m32 -Os -fomit-frame-pointer -fno-builtin -ffreestanding test.c
 
 clean:
-	rm -f *.o *.s *.iso memtest.bin memtest memtest_shared \
-		memtest_shared.bin memtest.iso
+	rm -f *.o *.s *.iso memtest.bin memtest memtest_shared memtest_shared.bin
+
+asm:
+	@./makedos.sh
 
 iso:
 	make all
 	./makeiso.sh
+	rm -f *.o *.s memtest.bin memtest memtest_shared memtest_shared.bin
 
 install: all
 	dd <memtest.bin >$(FDISK) bs=8192
@@ -78,3 +71,4 @@ install-precomp:
 	
 dos: all
 	cat mt86+_loader memtest.bin > memtest.exe
+
